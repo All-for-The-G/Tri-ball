@@ -1,13 +1,29 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
 public class Hexagon : MonoBehaviour
 {
+    public enum TileType
+    {
+        Grass,
+        Desert
+    }
+    
     [SerializeField] private HexCoordinates coordinates;
-    [SerializeField] private Color color;
-    [SerializeField] private List<Hexagon> neighbors; //Not not initialize in code. Set size in prefab instead.
+    [SerializeField] private TileType type;
+    [SerializeField] private List<Hexagon> neighbors; //Do not initialize in code. Set size in prefab instead.
+    [SerializeField] private List<Material> materials; //Do not initialize in code. Set size in prefab instead.
+
+    private Renderer renderer;
+    private void Awake()
+    {
+        type = TileType.Grass;
+        renderer = GetComponent<Renderer>();
+    }
 
     public HexCoordinates Coordinates
     {
@@ -15,10 +31,23 @@ public class Hexagon : MonoBehaviour
         set => coordinates = value;
     }
 
-    public Color Color
+    public TileType Type
     {
-        get => color;
-        set => color = value;
+        get => type;
+        set { type = value; UpdateMaterial(); }
+    }
+
+    private void UpdateMaterial()
+    {
+        if (materials.ElementAtOrDefault((int) type) != null)
+        {
+            renderer.material = materials.ElementAt((int) type);
+        }
+        else
+        {
+            renderer.material = materials.ElementAt((int) TileType.Grass);
+            Debug.LogError("Could not find material for " + type + " at " + coordinates);
+        }
     }
     
     public Hexagon GetNeighbor (HexagonDirection direction) {

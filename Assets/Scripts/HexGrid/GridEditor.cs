@@ -5,13 +5,12 @@ using UnityEngine.EventSystems;
 
 public class GridEditor : MonoBehaviour
 {
-    [SerializeField] private Color[] colors;
     [SerializeField] private Grid grid;
 
-    private Color activeColor;
+    private Hexagon.TileType activeType;
 
     private void Awake () {
-        SelectColor(0);
+        SelectType(0);
     }
 
     private void Update () {
@@ -25,11 +24,11 @@ public class GridEditor : MonoBehaviour
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(inputRay, out hit)) {
-            grid.ColorCell(hit.point, activeColor);
+            grid.ChangeCellType(hit.point, activeType);
         }
     }
 
-    public void SelectColor (int index) {
-        activeColor = colors[index];
+    public void SelectType (int index) {
+        activeType = (Hexagon.TileType) index;
     }
 }

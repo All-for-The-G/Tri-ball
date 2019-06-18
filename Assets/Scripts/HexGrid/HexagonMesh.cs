@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+[Obsolete]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexagonMesh : MonoBehaviour
 {
@@ -54,7 +55,7 @@ public class HexagonMesh : MonoBehaviour
             center + GridSettings.GetFirstCorner(direction, HexagonType.Visual),
             center + GridSettings.GetSecondCorner(direction, HexagonType.Visual)
         );
-        AddTriangleColor(cell.Color);
+        //AddTriangleColor(cell.Color);
     }
     
     void AddTriangleColor (Color color) {
