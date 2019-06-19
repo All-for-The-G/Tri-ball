@@ -18,16 +18,19 @@ public struct HexCoordinates {
     
     public int Y { get { return -x - z; } }
 
-    public HexCoordinates (int x, int z) {
+    public HexCoordinates (int x, int z) 
+    {
         this.x = x;
         this.z = z;
     }
     
-    public static HexCoordinates FromOffsetCoordinates (int x, int z) {
+    public static HexCoordinates FromOffsetCoordinates (int x, int z) 
+    {
         return new HexCoordinates(x - z / 2, z);
     }
     
-    public static HexCoordinates FromPosition (Vector3 position) {
+    public static HexCoordinates FromPosition (Vector3 position) 
+    {
         float x = position.x / (GridSettings.INNER_RADIUS * 2f);
         float y = -x;
         float offset = position.z / (GridSettings.OUTER_RADIUS * 3f);
@@ -54,11 +57,8 @@ public struct HexCoordinates {
         return new HexCoordinates(iX, iZ);
     }
     
-    public override string ToString () {
+    public override string ToString () 
+    {
         return "(" + X + ", " + Y + ", " + Z + ")";
-    }
-
-    public string ToStringOnSeparateLines () {
-        return X + "\n" + Y + "\n" + Z;
     }
 }

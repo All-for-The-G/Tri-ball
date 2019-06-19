@@ -43,12 +43,14 @@ public class HexagonMesh : MonoBehaviour
 	
     private void Triangulate (Hexagon cell) 
     {
-        for (HexagonDirection direction = HexagonDirection.NE; direction <= HexagonDirection.NW; direction++) {
+        for (HexagonDirection direction = HexagonDirection.NE; direction <= HexagonDirection.NW; direction++) 
+        {
             Triangulate(direction, cell);
         }
     }
     
-    void Triangulate (HexagonDirection direction, Hexagon cell) {
+    private void Triangulate (HexagonDirection direction, Hexagon cell) 
+    {
         Vector3 center = cell.transform.localPosition;
         AddTriangle(
             center,
@@ -58,13 +60,15 @@ public class HexagonMesh : MonoBehaviour
         //AddTriangleColor(cell.Color);
     }
     
-    void AddTriangleColor (Color color) {
+    private void AddTriangleColor (Color color) 
+    {
         colors.Add(color);
         colors.Add(color);
         colors.Add(color);
     }
     
-    private void AddTriangle (Vector3 v1, Vector3 v2, Vector3 v3) {
+    private void AddTriangle (Vector3 v1, Vector3 v2, Vector3 v3) 
+    {
         int vertexIndex = vertices.Count;
         vertices.Add(v1);
         vertices.Add(v2);

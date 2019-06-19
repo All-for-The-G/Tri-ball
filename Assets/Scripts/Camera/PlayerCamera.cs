@@ -12,7 +12,7 @@ public class PlayerCamera : MonoBehaviour
     
     private Transform rotation, zoom;
     private float zoomValue = 1f;
-    private float rotationAngle = 0f;
+    private float rotationAngle;
 
     private void Awake()
     {

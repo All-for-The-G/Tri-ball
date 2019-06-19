@@ -15,11 +15,13 @@ public static class GridSettings
     public const float INNER_RADIUS = OUTER_RADIUS * 0.866025404f;
     public const float VISUAL_INNER_RADIUS = VISUAL_OUTER_RADIUS * 0.866025404f;
 
-    public static Vector3 GetFirstCorner (HexagonDirection direction, HexagonType type) {
+    public static Vector3 GetFirstCorner (HexagonDirection direction, HexagonType type) 
+    {
         return HexagonPoints(type)[(int)direction];
     }
 
-    public static Vector3 GetSecondCorner (HexagonDirection direction, HexagonType type) {
+    public static Vector3 GetSecondCorner (HexagonDirection direction, HexagonType type) 
+    {
         return HexagonPoints(type)[(int)direction + 1];
     }
     

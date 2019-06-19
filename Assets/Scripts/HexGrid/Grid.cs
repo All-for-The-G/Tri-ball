@@ -14,14 +14,17 @@ public class Grid : MonoBehaviour
     {
         cells = new List<Hexagon>();
 
-        for (int z = 0; z < height; z++) {
-            for (int x = 0; x < width; x++) {
+        for (int z = 0; z < height; z++) 
+        {
+            for (int x = 0; x < width; x++) 
+            {
                 CreateCell(x, z);
             }
         }
     }
 
-    public void ChangeCellType (Vector3 position, Hexagon.TileType type) {
+    public void ChangeCellType (Vector3 position, Hexagon.TileType type) 
+    {
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         int index = Hexagon.Index(coordinates, width);
@@ -45,20 +48,24 @@ public class Grid : MonoBehaviour
 
         //FIXME: this logic hurts my soul. Should be a more elegant way to write this.
         int index = Hexagon.Index(cell.Coordinates, width);
-        if (x > 0) {
+        if (x > 0) 
+        {
             cell.SetNeighbor(HexagonDirection.W, cells[index - 1]);
             if (z > 0 && (z & 1) == 0) //(z & 1) == 0 checks if its even
             {
                 cell.SetNeighbor(HexagonDirection.SW, cells[index - width - 1]);
             }
         }
-        if (z > 0) {
-            if ((z & 1) == 0) {
+        if (z > 0) 
+        {
+            if ((z & 1) == 0) 
+            {
                 cell.SetNeighbor(HexagonDirection.SE, cells[index - width]);
             }
             else {
                 cell.SetNeighbor(HexagonDirection.SW, cells[index - width]);
-                if (x < width - 1) {
+                if (x < width - 1) 
+                {
                     cell.SetNeighbor(HexagonDirection.SE, cells[index - width + 1]);
                 }
             }

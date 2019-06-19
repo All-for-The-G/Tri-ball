@@ -50,7 +50,8 @@ public class Hexagon : MonoBehaviour
         }
     }
     
-    public Hexagon GetNeighbor (HexagonDirection direction) {
+    public Hexagon GetNeighbor (HexagonDirection direction) 
+    {
         return neighbors[(int)direction];
     }
 
@@ -59,7 +60,8 @@ public class Hexagon : MonoBehaviour
         return coordinates.X + coordinates.Z * width + coordinates.Z / 2;
     }
     
-    public void SetNeighbor (HexagonDirection direction, Hexagon cell) {
+    public void SetNeighbor (HexagonDirection direction, Hexagon cell) 
+    {
         neighbors[(int)direction] = cell;
         cell.neighbors[(int)direction.Opposite()] = this;
     }
