@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -9,9 +10,11 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] private float minVerticalZoom, maxVerticalZoom;
     [SerializeField] private float closePanSpeed, farPanSpeed;
     [SerializeField] private float rotationSpeed;
+    [SerializeField] private int edgePanzoneStart;
+    [SerializeField] private int edgePanZoneEnd;
     
     private Transform rotation, zoom;
-    private float zoomValue = 1f;
+    private float zoomValue;
     private float rotationAngle;
 
     private void Awake()
@@ -40,6 +43,10 @@ public class PlayerCamera : MonoBehaviour
         {
             AdjustPosition(xDelta, zDelta);
         }
+        else if(!EventSystem.current.IsPointerOverGameObject())
+        {
+            HandleScreenEdgePan();
+        }
     }
 	
     void AdjustZoom (float delta) 
@@ -63,7 +70,7 @@ public class PlayerCamera : MonoBehaviour
         position += direction * distance;
         transform.localPosition = position;
     }
-    
+
     void AdjustRotation (float delta) 
     {
         rotationAngle += delta * rotationSpeed * Time.deltaTime;
@@ -76,5 +83,43 @@ public class PlayerCamera : MonoBehaviour
             rotationAngle -= 360f;
         }
         transform.localRotation = Quaternion.Euler(0f, rotationAngle, 0f);
+    }
+
+    void HandleScreenEdgePan()
+    {
+        float xDelta = 0f;
+        float zDelta = 0f;
+        float mouseX = Input.mousePosition.x;
+        float mouseZ = Input.mousePosition.y;
+        bool edgePanning = false;
+
+        if (mouseX < Screen.width - edgePanzoneStart && mouseX >= Screen.width - edgePanZoneEnd)
+        {
+            xDelta = 1;
+            edgePanning = true;
+        }
+
+        if (mouseX > edgePanzoneStart && mouseX <= edgePanZoneEnd)
+        {
+            xDelta = -1;
+            edgePanning = true;
+        }
+
+        if (mouseZ < Screen.height - edgePanzoneStart && mouseZ >= Screen.height - edgePanZoneEnd)
+        {
+            zDelta = 1;
+            edgePanning = true;
+        }
+
+        if (mouseZ > edgePanzoneStart && mouseZ <= edgePanZoneEnd)
+        {
+            zDelta = -1;
+            edgePanning = true;
+        }
+
+        if (edgePanning)
+        {
+            AdjustPosition(xDelta, zDelta);
+        }
     }
 }
