@@ -42,7 +42,7 @@ public class Grid : MonoBehaviour
         Hexagon cell = Instantiate(hexagonPrefab);
         cells.Add(cell);
         cell.transform.SetParent(transform, false);
-        cell.transform.localScale = new Vector3(GridSettings.VISUAL_OUTER_RADIUS * 2, GridSettings.VISUAL_OUTER_RADIUS * 2, GridSettings.VISUAL_OUTER_RADIUS * 2);
+        cell.transform.localScale = new Vector3(GridSettings.VISUAL_OUTER_RADIUS * 40, GridSettings.VISUAL_OUTER_RADIUS * 40, GridSettings.VISUAL_OUTER_RADIUS * 40);
         cell.transform.localPosition = position;
         cell.Coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
 

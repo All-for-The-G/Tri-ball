@@ -25,20 +25,20 @@ public class PlayerCamera : MonoBehaviour
     
     private void Update () 
     {
-        float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
+        float zoomDelta = InputControl.GetAxis("Mouse Wheel");
         if (zoomDelta != 0f) 
         {
             AdjustZoom(zoomDelta);
         }
         
-        float rotationDelta = Input.GetAxis("Mouse X");
-        if (rotationDelta != 0f && Input.GetKey(KeyCode.Mouse2)) 
+        float rotationDelta = InputControl.GetAxis("Mouse X");
+        if (rotationDelta != 0f && InputControl.GetButton("Right Mouse Button"))
         {
             AdjustRotation(rotationDelta);
         }
         
-        float xDelta = Input.GetAxis("Horizontal");
-        float zDelta = Input.GetAxis("Vertical");
+        float xDelta = InputControl.GetAxis("Horizontal");
+        float zDelta = InputControl.GetAxis("Vertical");
         if (xDelta != 0f || zDelta != 0f) 
         {
             AdjustPosition(xDelta, zDelta);
@@ -89,8 +89,8 @@ public class PlayerCamera : MonoBehaviour
     {
         float xDelta = 0f;
         float zDelta = 0f;
-        float mouseX = Input.mousePosition.x;
-        float mouseZ = Input.mousePosition.y;
+        float mouseX = InputControl.mousePosition.x;
+        float mouseZ = InputControl.mousePosition.y;
         bool edgePanning = false;
 
         if (mouseX < Screen.width - edgePanzoneStart && mouseX >= Screen.width - edgePanZoneEnd)
