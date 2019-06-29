@@ -10,7 +10,7 @@ public enum HexagonType
 
 public static class GridSettings
 {
-    public const float OUTER_RADIUS = 1.1f;
+    public const float OUTER_RADIUS = 1.02f;
     public const float VISUAL_OUTER_RADIUS = 1f;
     public const float INNER_RADIUS = OUTER_RADIUS * 0.866025404f;
     public const float VISUAL_INNER_RADIUS = VISUAL_OUTER_RADIUS * 0.866025404f;

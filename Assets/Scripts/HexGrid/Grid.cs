@@ -12,6 +12,10 @@ public class Grid : MonoBehaviour
     private int height;
     private List<Hexagon> cells;
 
+    public List<Hexagon> Cells => cells;
+    public int Width => width;
+    public int Height => height;
+
     private void Awake () 
     {
        GenerateEmptyGrid(10,10);
