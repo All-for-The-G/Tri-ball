@@ -12,41 +12,33 @@ public class Hexagon : MonoBehaviour
         Grass,
         Desert
     }
-    
-    [SerializeField] private HexCoordinates coordinates;
-    [SerializeField] private TileType type;
+
+    [SerializeField] private HexagonData hexagonData;
     [SerializeField] private List<Hexagon> neighbors; //Do not initialize in code. Set size in prefab instead.
     [SerializeField] private List<Material> materials; //Do not initialize in code. Set size in prefab instead.
 
     private Renderer renderer;
     private void Awake()
     {
-        type = TileType.Grass;
         renderer = GetComponent<Renderer>();
     }
 
-    public HexCoordinates Coordinates
+    public HexagonData HexagonData
     {
-        get => coordinates;
-        set => coordinates = value;
-    }
-
-    public TileType Type
-    {
-        get => type;
-        set { type = value; UpdateMaterial(); }
+        get => hexagonData;
+        set { hexagonData = value; UpdateMaterial(); }
     }
 
     private void UpdateMaterial()
     {
-        if (materials.ElementAtOrDefault((int) type) != null)
+        if (materials.ElementAtOrDefault((int) hexagonData.Type) != null)
         {
-            renderer.material = materials.ElementAt((int) type);
+            renderer.material = materials.ElementAt((int) hexagonData.Type);
         }
         else
         {
             renderer.material = materials.ElementAt((int) TileType.Grass);
-            Debug.LogError("Could not find material for " + type + " at " + coordinates);
+            Debug.LogError("Could not find material for " + hexagonData.Type + " at " + hexagonData.Coordinates);
         }
     }
     

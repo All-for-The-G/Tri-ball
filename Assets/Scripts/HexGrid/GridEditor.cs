@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GridEditor : MonoBehaviour
 {
     [SerializeField] private Grid grid;
+    [SerializeField] private Slider heightSlider;
+    [SerializeField] private Slider widthSlider;
 
     private Hexagon.TileType activeType;
 
@@ -36,5 +39,12 @@ public class GridEditor : MonoBehaviour
     public void SelectType (int index) 
     {
         activeType = (Hexagon.TileType) index;
+    }
+
+    public void UpdateBlankGrid()
+    {
+        int height = (int)heightSlider.value;
+        int width = (int)widthSlider.value;
+        grid.GenerateEmptyGrid(height, width);
     }
 }

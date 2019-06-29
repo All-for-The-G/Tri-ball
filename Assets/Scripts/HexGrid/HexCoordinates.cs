@@ -5,18 +5,12 @@ public struct HexCoordinates {
 
     [SerializeField]
     private int x, z;
-    
-    public int X
-    {
-        get { return x; }
-    }
 
-    public int Z
-    {
-        get { return z; }
-    }
-    
-    public int Y { get { return -x - z; } }
+    public int X => x;
+
+    public int Z => z;
+
+    public int Y => -x - z;
 
     public HexCoordinates (int x, int z) 
     {
