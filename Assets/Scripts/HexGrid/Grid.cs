@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
-    [SerializeField] private Hexagon hexagonPrefab;
+    [SerializeField] private Hexagon grassHexagon;
+    [SerializeField] private Hexagon dirtHexagon;
     
     private int width;
     private int height;
@@ -27,8 +28,14 @@ public class Grid : MonoBehaviour
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         int index = Hexagon.Index(coordinates, width);
         Hexagon cell = cells[index];
+        if (cell.HexagonData.Type == type)
+        {
+            return;
+        }
+        
         HexagonData data = new HexagonData(cell.HexagonData.Coordinates, type, cell.HexagonData.XIndex, cell.HexagonData.ZIndex);
-        cell.HexagonData = data;
+        InitializeCell(GetPrefabFromType(type), cell.transform.localPosition, data, index);
+        Destroy(cell.gameObject);
     }
 
     //TODO: move generators to own class, to ensure height/width is always updated
@@ -61,17 +68,66 @@ public class Grid : MonoBehaviour
         position.x = (x + z * 0.5f - z / 2) * (GridSettings.INNER_RADIUS * 2f);
         position.y = 0f;
         position.z = z * (GridSettings.OUTER_RADIUS * 1.5f);
-
-        Hexagon cell = Instantiate(hexagonPrefab);
-        cells.Add(cell);
-        cell.transform.SetParent(transform, false);
-        cell.transform.localScale = new Vector3(GridSettings.VISUAL_OUTER_RADIUS * 36f, GridSettings.VISUAL_OUTER_RADIUS * 36f, GridSettings.VISUAL_OUTER_RADIUS * 36f);
-        cell.transform.localPosition = position;
         HexagonData hexagonData = new HexagonData(HexCoordinates.FromOffsetCoordinates(x, z), type, x, z);
-        cell.HexagonData = hexagonData;
 
-        //FIXME: this logic hurts my soul. Should be a more elegant way to write this.
-        int index = Hexagon.Index(hexagonData.Coordinates, width);
+        InitializeCell(GetPrefabFromType(type), position, hexagonData);
+    }
+
+    private void InitializeCell(Hexagon prefab, Vector3 position, HexagonData data, int index = -1)
+    {
+        Hexagon cell = Instantiate(prefab);
+        if (index >= 0)
+        {
+            cells[index] = cell;
+        }
+        else
+        {
+            cells.Add(cell);
+        }
+        
+        cell.transform.SetParent(transform, false);
+        cell.transform.localScale = new Vector3(GridSettings.VISUAL_OUTER_RADIUS * 0.4f, GridSettings.VISUAL_OUTER_RADIUS * 0.4f, GridSettings.VISUAL_OUTER_RADIUS * 0.4f);
+        cell.transform.localPosition = position;
+        cell.HexagonData = data;
+        
+        //Need to recalculate entire grid, if inserting a new cell in the middle.
+        
+        if (index >= 0)
+        {
+            cells.ForEach(CalculateNeighbours);
+        }
+        else
+        {
+            CalculateNeighbours(cell);
+        }
+        
+        
+    }
+
+    private Hexagon GetPrefabFromType(Hexagon.TileType type)
+    {
+        Hexagon prefab;
+        switch (type)
+        {
+            case Hexagon.TileType.Grass:
+                prefab = grassHexagon;
+                break;
+            case Hexagon.TileType.Desert:
+                prefab = dirtHexagon;
+                break;
+            default:
+                prefab = grassHexagon;
+                break;
+        }
+
+        return prefab;
+    }
+
+    private void CalculateNeighbours(Hexagon cell)
+    {
+        int index = Hexagon.Index(cell.HexagonData.Coordinates, width);
+        int x = (int)cell.transform.position.x;
+        int z = (int)cell.transform.position.z;
         if (x > 0) 
         {
             cell.SetNeighbor(HexagonDirection.W, cells[index - 1]);

@@ -15,7 +15,6 @@ public class Hexagon : MonoBehaviour
 
     [SerializeField] private HexagonData hexagonData;
     [SerializeField] private List<Hexagon> neighbors; //Do not initialize in code. Set size in prefab instead.
-    [SerializeField] private List<Material> materials; //Do not initialize in code. Set size in prefab instead.
 
     private Renderer renderer;
     private void Awake()
@@ -23,24 +22,7 @@ public class Hexagon : MonoBehaviour
         renderer = GetComponent<Renderer>();
     }
 
-    public HexagonData HexagonData
-    {
-        get => hexagonData;
-        set { hexagonData = value; UpdateMaterial(); }
-    }
-
-    private void UpdateMaterial()
-    {
-        if (materials.ElementAtOrDefault((int) hexagonData.Type) != null)
-        {
-            renderer.material = materials.ElementAt((int) hexagonData.Type);
-        }
-        else
-        {
-            renderer.material = materials.ElementAt((int) TileType.Grass);
-            Debug.LogError("Could not find material for " + hexagonData.Type + " at " + hexagonData.Coordinates);
-        }
-    }
+    public HexagonData HexagonData { get; set; }
     
     public Hexagon GetNeighbor (HexagonDirection direction) 
     {
