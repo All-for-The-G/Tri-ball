@@ -86,7 +86,6 @@ public class Grid : MonoBehaviour
         }
         
         cell.transform.SetParent(transform, false);
-        cell.transform.localScale = new Vector3(GridSettings.VISUAL_OUTER_RADIUS * 0.4f, GridSettings.VISUAL_OUTER_RADIUS * 0.4f, GridSettings.VISUAL_OUTER_RADIUS * 0.4f);
         cell.transform.localPosition = position;
         cell.HexagonData = data;
         
