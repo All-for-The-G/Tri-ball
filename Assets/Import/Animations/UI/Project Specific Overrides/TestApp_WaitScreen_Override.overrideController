@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: TestApp_WaitScreen_Override
+  m_Controller: {fileID: 9100000, guid: d9bea3d2a06d71d458316e0a2155f51e, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 1bda99cadf223184d90af6c82a4f5304, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 1bda99cadf223184d90af6c82a4f5304, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: c998dfefeb063d747a831239a2c102e8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c998dfefeb063d747a831239a2c102e8, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 833e616c6e22d1244b05e682b3acc1f4, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 833e616c6e22d1244b05e682b3acc1f4, type: 2}
