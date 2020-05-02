@@ -1,16 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+#if UNITY_EDITOR
 using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class MapEditor : MonoBehaviour
 {
-    public bool drawHexagon = false;
     public Vector3[] hexagonPos = new Vector3[] { };
+    [HideInInspector] public string mapEditorScenePath = "Assets/MapEditorPlugin/MapEditorPlugin_demo_scene.unity";
+    private void Start()
+    {
+        Selection.activeGameObject = gameObject;
+    }
     public void GenerateMap()
     {
-        drawHexagon = true;
         Debug.Log("Bingo Map Generated!");
     }
 }
@@ -20,17 +27,29 @@ public class MapEditor : MonoBehaviour
 //[CanEditMultipleObjects]
 public class InspectorPlugin : Editor
 {
+    public static InspectorPlugin instance;
+    static string mapEditorScenePath = "Assets/MapEditorPlugin/MapEditorPlugin_demo_scene.unity";
     MapEditor mapEditor;
     Vector3 a;
     bool repaint = false;
     Vector3 selectedPos = Vector2.one * 1000f;
+    public Color selectionColor = Color.blue;
+    InspectorPlugin()
+    {
+        instance = this;
+    }
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         mapEditor = (MapEditor)target;
         GUILayout.Label("M A P   E D I T O R");
-        a = EditorGUILayout.Vector3Field("Enter V3",a);
-        if (GUILayout.Button("Generate Map Visuals"))
+        //GUILayout.Label("Map Editor Scene Path");
+        //mapEditor.mapEditorScenePath = EditorGUILayout.TextField(mapEditor.mapEditorScenePath);
+        //mapEditorScenePath = mapEditor.mapEditorScenePath;
+        GUILayout.BeginHorizontal();
+        a = EditorGUILayout.Vector3Field("Enter New Pos",a);
+        GUILayout.EndHorizontal();
+        if (GUILayout.Button("Add new hexagon"))
         {
             Vector3[] newHexagon = new Vector3[mapEditor.hexagonPos.Length+1];
             for (int i=0;i< mapEditor.hexagonPos.Length;i++)
@@ -87,7 +106,7 @@ public class InspectorPlugin : Editor
     }
     private void Draw()
     {
-        if (mapEditor!=null && mapEditor.drawHexagon)
+        if (mapEditor!=null)
         {
             for (int i = 0; i < mapEditor.hexagonPos.Length; i++)
             {
@@ -109,7 +128,7 @@ public class InspectorPlugin : Editor
         Handles.color = _default;
         if (Vector3.Distance(selectedPos,_pos)<1.7 && !_ignoreSelection)
         {
-            Handles.color = Color.blue;
+            Handles.color = selectionColor;
         }
         Handles.DrawAAConvexPolygon(hexagon);
         Handles.color = Color.red;
@@ -125,6 +144,81 @@ public class InspectorPlugin : Editor
     {
         Vector3 GroundHitPos = _rayOrigin + (_rayDir * GetHypotenuse(_rayOrigin, _rayDir));
         return GroundHitPos;
+    }
+    [MenuItem("TriBall/MapEditor %M")]
+    static void OpenBuiltInMapEditor()
+    {
+        if (mapEditorScenePath != "")
+        {
+            EditorSceneManager.OpenScene(mapEditorScenePath);
+            EditorSceneManager.sceneLoaded += (scene,mode)=> {
+            };
+        }
+    }
+    private void OnEnable()
+    {
+        //Selection.SetActiveObjectWithContext();
+        //SelectEditorObject();
+        FocusPosition(((MapEditor)target).transform.position);
+        Debug.Log("OnEnable");
+        Tools.hidden = true;
+        SceneView.lastActiveSceneView.drawGizmos = false;
+        SceneView.lastActiveSceneView.Focus();
+        //WindowPlugin.instance.Focus();
+        WindowPlugin.Init();
+    }
+    private void OnDestroy()
+    {
+        Tools.hidden = false;
+        SceneView.lastActiveSceneView.drawGizmos = true;
+    }
+    private void OnDisable()
+    {
+        SelectEditorObject();
+    }
+    private void SelectEditorObject()
+    {
+        Selection.activeObject = target;
+    }
+    public void FocusPosition(Vector3 pos)
+    {
+        SceneView.lastActiveSceneView.Frame(new Bounds(pos, Vector3.one), false);
+    }
+}
+public class WindowPlugin: EditorWindow
+{
+
+    public static WindowPlugin instance = null;
+
+    [MenuItem("TriBall/MapEditorWindow %M")]
+    public static void Init()
+    {
+        GetWindow<WindowPlugin>("Map Editor Window");
+    }
+
+    public WindowPlugin()
+    {
+        instance = this;
+    }
+
+    void OnGUI()
+    {
+        GUILayout.Label("TRI-BALL M A P   E D I T O R");
+        if (GUILayout.Button("Green Color"))
+        {
+            //WindowPlugin.instance.Focus();
+            InspectorPlugin.instance.selectionColor = Color.green;
+        }
+        if (GUILayout.Button("Red Color"))
+        {
+            //WindowPlugin.instance.Focus();
+            InspectorPlugin.instance.selectionColor = Color.red;
+        }
+        if (GUILayout.Button("Yellow Color"))
+        {
+            //WindowPlugin.instance.Focus();
+            InspectorPlugin.instance.selectionColor = Color.yellow;
+        }
     }
 }
 #endif
