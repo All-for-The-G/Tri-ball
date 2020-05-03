@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -25,10 +27,12 @@ namespace TriBallMapEditorPlugin
         [HideInInspector] public TileType[,] grid = new TileType[0,0];
         //public Vector3[] hexagonPos = new Vector3[] { };
         [HideInInspector] public string mapEditorScenePath = "Assets/MapEditorPlugin/MapEditorPlugin_demo_scene.unity";
-#if UNITY_EDITOR
         public TriBallMenuConfig menuConfig;
-#endif
         private void Start()
+        {
+            Init();
+        }
+        private void Init()
         {
             GenerateMap();
             Selection.activeGameObject = gameObject;
@@ -54,11 +58,19 @@ namespace TriBallMapEditorPlugin
 
         }
     }
-
     [CreateAssetMenu(fileName = "TriBallMapData", menuName = "TriBall/Map Data")]
     public class TriBallMapData : ScriptableObject
     {
 
+    }
+    [Serializable]
+    public class TriBallMenuConfig
+    {
+        public Texture grass = null;
+        public Texture dirt = null;
+        public Texture water = null;
+        public Texture blocks = null;
+        public Texture editorLogo = null;
     }
 #if UNITY_EDITOR
     [CustomEditor(typeof(MapEditor))]
@@ -80,7 +92,7 @@ namespace TriBallMapEditorPlugin
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            //mapEditor = (MapEditor)target;
+            mapEditor = (MapEditor)target;
             //GUILayout.Label("M A P   E D I T O R");
             //GUILayout.Label("Map Editor Scene Path");
             //mapEditor.mapEditorScenePath = EditorGUILayout.TextField(mapEditor.mapEditorScenePath);
@@ -102,6 +114,7 @@ namespace TriBallMapEditorPlugin
         }
         public void OnSceneGUI()
         {
+            mapEditor = (MapEditor)target;
             Event guiEvent = Event.current;
 
             if (guiEvent.type == EventType.Repaint)
@@ -213,7 +226,17 @@ namespace TriBallMapEditorPlugin
         }
         private void DrawMenu()
         {
-            if (mapEditor == null) return;
+            if (mapEditor == null)
+            {
+                Debug.Log(nameof(mapEditor)+" is Null");
+                mapEditor = (MapEditor)target;
+            }
+            if (mapEditor == null)
+            {
+                Debug.Log(nameof(mapEditor) + " is still Null");
+                return;
+            }
+            if (mapEditor.menuConfig == null) { Debug.Log("menuConfig is " + mapEditor.menuConfig); return; }
             Handles.BeginGUI();
             if (GUILayout.Button(mapEditor.menuConfig.grass/*"Reset Area"*/, GUILayout.Width(100), GUILayout.Height(100)))
             {
@@ -231,6 +254,39 @@ namespace TriBallMapEditorPlugin
             {
                 paintTileType = TileType.BLOCKED;
             }
+            Rect newRect = new Rect();
+            newRect.Set(110, 20, 100, 300);
+            GUILayout.BeginArea(newRect);
+            InspectorPlugin ip = InspectorPlugin.instance;
+            if (ip == null) return;
+            MapEditor me = ip.mapEditor;
+            if (me == null) return;
+            GUILayout.Label("Map Settings");
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Radius");
+            me.radius = EditorGUILayout.FloatField(me.radius);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Width");
+            me.width = EditorGUILayout.IntField(me.width);
+            GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Height");
+            me.height = EditorGUILayout.IntField(me.height);
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button("Generate Grid"))
+            {
+                me.GenerateMap();
+            }
+            if (GUILayout.Button("Load Map"))
+            {
+                me.LoadMap();
+            }
+            if (GUILayout.Button("Save Map"))
+            {
+                me.SaveMap();
+            }
+            GUILayout.EndArea();
             Handles.EndGUI();
         }
         private void DrawHexagon(Vector3 _pos, Color _default, bool _ignoreSelection = false)
@@ -271,16 +327,16 @@ namespace TriBallMapEditorPlugin
         }
         private void OnEnable()
         {
+            mapEditor = (MapEditor)target;
             //Selection.SetActiveObjectWithContext();
             //SelectEditorObject();
-            FocusPosition(((MapEditor)target).transform.position);
             //Debug.Log("OnEnable");
             Tools.hidden = true;
             SceneView.lastActiveSceneView.drawGizmos = false;
             SceneView.lastActiveSceneView.Focus();
             //WindowPlugin.instance.Focus();
-            WindowPlugin.Init();
-            mapEditor = (MapEditor)target;
+            //WindowPlugin.Init();
+            FocusPosition(((MapEditor)target).transform.position);
         }
         private void OnDestroy()
         {
@@ -293,7 +349,7 @@ namespace TriBallMapEditorPlugin
         }
         private void SelectEditorObject()
         {
-            Debug.Log(Selection.activeObject);
+            //Debug.Log(Selection.activeObject);
             if (Selection.activeObject != null && Selection.activeGameObject == null) return;
             Selection.activeObject = target;
         }
@@ -306,11 +362,13 @@ namespace TriBallMapEditorPlugin
     {
 
         public static WindowPlugin instance = null;
-
-        [MenuItem("TriBall/MapEditorWindow %W")]
+        public static bool isInitialize = false;
+        //[MenuItem("TriBall/MapEditorWindow %W")]
+        [MenuItem("TriBall/MapEditorWindow")]
         public static void Init()
         {
             GetWindow<WindowPlugin>("Map Editor Window");
+            isInitialize = true;
         }
 
         public WindowPlugin()
@@ -321,8 +379,12 @@ namespace TriBallMapEditorPlugin
         void OnGUI()
         {
             InspectorPlugin ip = InspectorPlugin.instance;
+            if (ip == null) return;
             MapEditor me = ip.mapEditor;
-            if (ip==null || me==null) return;
+            if (me == null) return;
+            GUILayout.Button(me.menuConfig.editorLogo, GUILayout.Width(100), GUILayout.Height(100));
+            GUILayout.Label("Tri-Ball map editor plugin v1.0");
+            /*
             GUILayout.Label("Map Settings");
             GUILayout.BeginHorizontal();
             GUILayout.Label("Radius");
@@ -348,6 +410,7 @@ namespace TriBallMapEditorPlugin
             {
                 me.SaveMap();
             }
+            */
             //if (GUILayout.Button("Red Color"))
             //{
             //    //WindowPlugin.instance.Focus();
@@ -359,14 +422,6 @@ namespace TriBallMapEditorPlugin
             //    InspectorPlugin.instance.selectionColor = Color.yellow;
             //}
         }
-    }
-    [CreateAssetMenu(fileName = "TriBallMenuConfig", menuName = "TriBall/Menu Config")]
-    public class TriBallMenuConfig : ScriptableObject
-    {
-        public Texture grass;
-        public Texture dirt;
-        public Texture water;
-        public Texture blocks;
     }
 #endif
 }
